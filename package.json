@@ -1,0 +1,11 @@
+{
+  "name": "lifeboard",
+  "private": true,
+  "type": "module",
+  "description": "Personal dashboard that reads Eliott's other apps through plugins. No build step; this file only holds dev scripts and is not deployed.",
+  "scripts": {
+    "start": "node scripts/dev-server.js 4192",
+    "test": "node scripts/plugin-test.js",
+    "icons": "python3 scripts/gen_icons.py"
+  }
+}

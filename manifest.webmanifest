@@ -1,0 +1,15 @@
+{
+  "name": "Lifeboard",
+  "short_name": "Lifeboard",
+  "description": "One board for every life app, plugged in like cartridges.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#E4E2EB",
+  "theme_color": "#E4E2EB",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
