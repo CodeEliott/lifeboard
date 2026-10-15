@@ -24,6 +24,12 @@ README.md has the data flow, the plugin contract and how to add an app; this fil
   and dark (CSS variables only) and at 320px wide.
 - Icons are generated: edit `scripts/gen_icons.py`, run `npm run icons`.
 
+## Git and deploy
+
+- Live: https://lifeboard-rho.vercel.app. Public repo `CodeEliott/lifeboard`; every push to `main`
+  deploys to production, so never push a half-finished change to `main` (branch, test, then merge).
+- After a push, confirm the live site serves the new files (curl the changed file).
+
 ## Neighbours
 
 - RepLog: `../workout-tracker` (its Supabase project hosts both v1 sources).

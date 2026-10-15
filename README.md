@@ -10,6 +10,8 @@ and **Appearance Lab** (protocol, check-ins, experiments).
 
 Zero-build static app: ES modules, no dependencies, one CSS file.
 
+**Live:** https://lifeboard-rho.vercel.app (every push to `main` deploys to production).
+
 ## Run
 
 ```bash
@@ -86,6 +88,7 @@ Existing users get new plugins appended to their board, switched on.
 1. **Appearance Lab table:** run `supabase/alab-data.sql` in the SQL editor of RepLog's Supabase
    project (`cokgmxsotavbstymslvc`). Until then the Appearance Lab cartridge says so.
 2. **Sign-in redirect:** in that project, Authentication → URL Configuration → Redirect URLs, add
-   the Lifeboard URL with `/**` (and `http://localhost:4192/**` for local testing). Without it,
-   Google sends you back to RepLog's site instead of Lifeboard.
-3. Deploy the folder to Vercel (static, no build). `.vercelignore` keeps scripts, SQL and docs off the site.
+   `https://lifeboard-rho.vercel.app/**` (and `http://localhost:4192/**` for local testing). Without
+   it, Google sends you back to RepLog's site instead of Lifeboard.
+3. Deploys: Vercel project `lifeboard` (team high-byte-s-projects) is connected to this GitHub repo,
+   static, no build. `.vercelignore` keeps scripts, SQL and docs off the site.
