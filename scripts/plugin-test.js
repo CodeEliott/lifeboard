@@ -148,8 +148,19 @@ for (const p of PLUGINS) {
   check('CSP connect-src allows the Supabase project', csp.includes(sbUrl));
   check('CSP script-src allows the pinned supabase-js path', csp.includes(sbSrc.slice(0, sbSrc.indexOf('/dist/') + 1)));
 
-  const js = (await Promise.all((await walk('js')).map((f) => readFile(join(ROOT, f), 'utf8')))).join('\n');
-  check('no plugin or source writes to a table', !/\.(insert|upsert|update|delete)\(/.test(js));
+  // Read-only towards other apps: only the board's own sync code writes, and only to its own
+  // table (lifeboard_data) and bucket (lifeboard).
+  const WRITERS = ['js/board/sync.js', 'js/board/assets.js'];
+  for (const f of await walk('js')) {
+    const src = await readFile(join(ROOT, f), 'utf8');
+    // Database and storage writes only (not Map.delete or classList.remove).
+    const writes = /\.(insert|upsert|update|upload)\(/.test(src) || /\.storage\b/.test(src) || /\.from\([^)]*\)[\s\S]{0,80}?\.(delete|remove)\(/.test(src);
+    if (!WRITERS.includes(f)) check(`${f} never writes`, !writes);
+  }
+  const sync = await readFile(join(ROOT, 'js/board/sync.js'), 'utf8');
+  const assets = await readFile(join(ROOT, 'js/board/assets.js'), 'utf8');
+  check('sync.js only writes lifeboard_data', [...sync.matchAll(/\.from\('([^']+)'\)/g)].every((m) => m[1] === 'lifeboard_data'));
+  check('assets.js only uses the lifeboard bucket', /const BUCKET = 'lifeboard';/.test(assets) && !/\.from\('(?!lifeboard)/.test(assets.replace(/storage\.from\(BUCKET\)/g, '')));
 }
 
 console.log(`${passed} passed, ${failed} failed`);

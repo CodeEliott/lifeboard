@@ -5,8 +5,13 @@ README.md has the data flow, the plugin contract and how to add an app; this fil
 
 ## Rules
 
-- **Read-only.** Lifeboard never writes to another app's data. Sources only `select`. RepLog syncs
-  "newest save wins", so a write from here could wipe real workouts. `npm test` enforces it.
+- **Read-only towards other apps.** Sources only `select`. RepLog syncs "newest save wins", so a
+  write from here could wipe real workouts. The only writes are the board's own, in
+  `js/board/sync.js` (table `lifeboard_data`) and `js/board/assets.js` (bucket `lifeboard`).
+  `npm test` fails on a database or storage write in any other file.
+- **The board document is untrusted when read back** (localStorage, cloud). Any new field needs a
+  rule in `sanitizeBoard()` (`js/board/model.js`) and a case in `scripts/board-test.js`. Look things
+  up by stored name with `own()` / `Object.hasOwn`, never `obj[name]` (`'__proto__'` is truthy).
 - **Plugins are pure.** `shape(raw, { today })` in, standard result out. No DOM, no network, no
   `Date.now()`-dependent output beyond `today` (tests pass a fixed day). All drawing is in `main.js`.
 - **Raw rows are untrusted input** written by other apps: guard every field (`list()`, `obj()`), and
@@ -19,9 +24,14 @@ README.md has the data flow, the plugin contract and how to add an app; this fil
   `js/cloud.js` and the `script-src` path in `vercel.json` (keep it equal to RepLog's pin).
 - **Adding or renaming a shipped file** means updating `SHELL` in `sw.js`; bump `CACHE`
   (`lifeboard-vN`) in every change to a shipped file. `npm test` checks SHELL against `js/`.
-- Color: the console stays neutral grey; color only comes from plugins (`--c`). Text on a plugin
-  color is always `var(--on-fill)`. Never fade a plugin color with opacity. New UI must work in light
-  and dark (CSS variables only) and at 320px wide.
+- Color: base colors come from the scheme (`board/theme.js` sets CSS variables on `<html>`); use
+  the variables, never literal colors, so every scheme works. Plugin colors are `--c` with
+  `--on-c` for text on them (computed for contrast). Never fade a plugin color with opacity.
+  New UI must work in light and dark schemes and at 320px wide.
+- Widget content adapts to the widget's own width with container queries (`@container`), not
+  media queries, because widgets can be any size. Edit-mode drag handles carry `data-drag`.
+- CSS class names are global: check a new one is not already used (`.ghost` once collided with
+  the outlined `.btn.ghost` buttons).
 - Icons are generated: edit `scripts/gen_icons.py`, run `npm run icons`.
 
 ## Git and deploy
@@ -41,4 +51,4 @@ README.md has the data flow, the plugin contract and how to add an app; this fil
 
 - `npm test` and `node --check` on every JS file you touched.
 - Visual changes: `npm start` (or the `lifeboard` launch config), check sample data in both themes
-  and at 320px.
+  and at 320px, in view mode and edit mode.
